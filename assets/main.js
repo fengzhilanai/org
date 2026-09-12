@@ -1,15 +1,26 @@
 (() => {
+  document.documentElement.classList.add('js-enabled');
   const menu = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.site-nav');
   if (menu && nav) {
+    const closeMenu = () => {
+      nav.classList.remove('is-open');
+      menu.setAttribute('aria-expanded', 'false');
+    };
     menu.addEventListener('click', () => {
       const open = nav.classList.toggle('is-open');
       menu.setAttribute('aria-expanded', String(open));
     });
-    nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => {
-      nav.classList.remove('is-open');
-      menu.setAttribute('aria-expanded', 'false');
-    }));
+    nav.querySelectorAll('a').forEach((link) => link.addEventListener('click', closeMenu));
+    document.addEventListener('keydown', (event) => {
+      if (event.key === 'Escape' && nav.classList.contains('is-open')) {
+        closeMenu();
+        menu.focus();
+      }
+    });
+    document.addEventListener('click', (event) => {
+      if (nav.classList.contains('is-open') && !nav.contains(event.target) && !menu.contains(event.target)) closeMenu();
+    });
   }
 
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
